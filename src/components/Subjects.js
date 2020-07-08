@@ -16,11 +16,22 @@ function Subjects({ handleFavorite }) {
     filteredList.length > 0 ? setNoResults(false) : setNoResults(true);
   }, [filteredList, handleFavorite]);
 
+  function updateFilteredList(filterValue) {
+    setFilteredList(allSubjects.data.filter((sub) => sub.code.toUpperCase().includes(filterValue) || sub.norwegian_name.toUpperCase().includes(filterValue)));
+  }
+
+  useEffect(() => {
+    if (searchValue.length % 3 === 0 && searchValue.length > 0) {
+      updateFilteredList(searchValue);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allSubjects.fetchingData]);
+
   function handleSearch(e) {
     const inputValue = e.target.value.toUpperCase();
     setSearchValue(inputValue);
     if (inputValue.length % 3 === 0 && inputValue.length > 0) {
-      setFilteredList(allSubjects.data.filter((sub) => sub.code.toUpperCase().includes(inputValue) || sub.norwegian_name.toUpperCase().includes(inputValue)))
+      updateFilteredList(inputValue);
     }
   }
 
@@ -36,6 +47,9 @@ function Subjects({ handleFavorite }) {
       </div>
       <hr />
       {noResults ? 'Ditt søk ga ingen nye resultater' : ''}
+      <p>
+        {allSubjects.fetchingData ? 'Henter flere emner ...' : ''}
+      </p>
       {subjectlist}
     </div>
   );
